@@ -1,5 +1,8 @@
 #include "raylib.h"
-#include <stdio.h>
+#if defined(PLATFORM_WEB)
+    #include <emscripten/emscripten.h>
+#endif
+#include <stdio.h>  
 
 #define FPS 60 // Frames Per Second
 #define ASI 0.125f // Asteroid Speed Increment
@@ -108,35 +111,43 @@ void draw_menu_frame(void);
 void unload_game(void);
 void reset_game_variables(void);
 
+void UpdateDrawFrame(void);
+
 int main(void) {
 
     InitWindow(screen_width, screen_height, "Spaceship Survival");
 
     InitAudioDevice();
     init_variables();
-
-    SetTargetFPS(FPS); // FPS regulates also audio
     PlayMusicStream(bkg_music);
+
+#if defined(PLATFORM_WEB)
+    emscripten_set_main_loop(UpdateDrawFrame, 0, 1);
+#else
+    SetTargetFPS(FPS); // FPS regulates also audio
 
     while (!WindowShouldClose()) 
     {
-        if (play) update_play_frame();
-        else if (gameover) update_gameover_frame();
-        else update_menu_frame();
-        // update_gameover_frame();
-
-        BeginDrawing();
-            if (play) draw_play_frame();
-            else if (gameover) draw_gameover_frame();
-            else draw_menu_frame();
-            // draw_gameover_frame();
-        EndDrawing();
+        UpdateDrawFrame();
     }
+#endif
 
     unload_game();
     CloseWindow();
 
     return 0;
+}
+
+void UpdateDrawFrame(void) {
+    if (play) update_play_frame();
+    else if (gameover) update_gameover_frame();
+    else update_menu_frame();
+
+    BeginDrawing();
+        if (play) draw_play_frame();
+        else if (gameover) draw_gameover_frame();
+        else draw_menu_frame();
+    EndDrawing();
 }
 
 void draw_gameover_frame(void) {
