@@ -8,23 +8,25 @@
 #define ASI 0.125f // Asteroid Speed Increment
 
 #define MAX_BULLETS 512
-#define MAX_ASTEROID_SPEED 16.0f
-#define SPACESHIP_SPEED 8.0f
-#define SPACESHIP_SCALE 0.5f
-#define FLAME_SCALE 0.5f
-#define BULLET_SCALE 0.5f
-#define BULLET_SPEED 8.0f
-#define PLAY_BTN_INLINE_PADDING 30.0f
-#define PLAY_BTN_BLOCK_PADDING 15.0f
+#define SPEED_MAX_ASTEROID 16.0f
+#define SPEED_SPACESHIP 8.0f
+#define SPEED_BULLET 8.0f
+// Don't care about POT. Neither mipmaps nor repeating is used.
+#define SCALE_SPACESHIP 0.39f
+#define SCALE_FLAME 0.39f
+#define SCALE_BULLET 0.39f
+#define PADDING_PLAY_BTN_INLINE 30.0f
+#define PADDING_PLAY_BTN_BLOCK 15.0f
 
-// style
-#define H1_FS 30 // FS: Font-Size
-#define H2_FS 25
-#define P_FS 16
-#define BTN_FS 30
+// Styling
+// FS: Font-Size
+#define FS_H1 30 
+#define FS_H2 25
+#define FS_P 16
+#define FS_BTN 30
 
-const int screen_width = 1024;
-const int screen_height = 600;
+const int screen_width = 800;
+const int screen_height = 450;
 
 Music bkg_music;
 Sound propulsion_sound;
@@ -155,16 +157,16 @@ void draw_gameover_frame(void) {
     DrawText("Game Over", gameover_title_pos.x, gameover_title_pos.y, gameover_title_fs, WHITE);
 
     // Stats about the game
-    DrawText(TextFormat("Asteroids Destroyed: %d", asteroids_destroyed), asteroids_destroyed_txt.x, asteroids_destroyed_txt.y, H2_FS, WHITE);
-    DrawText(TextFormat("Game Duration: %.2f", game_duration), game_duration_txt.x, game_duration_txt.y, H2_FS, WHITE);
+    DrawText(TextFormat("Asteroids Destroyed: %d", asteroids_destroyed), asteroids_destroyed_txt.x, asteroids_destroyed_txt.y, FS_H2, WHITE);
+    DrawText(TextFormat("Game Duration: %.2f", game_duration), game_duration_txt.x, game_duration_txt.y, FS_H2, WHITE);
 
     // play again
     DrawRectangleRec(play_again_btn_bounds, play_again_btn_hover_clr ? WHITE : LIGHTGRAY);
-    DrawText("Play Again", play_again_btn_txt.x, play_again_btn_txt.y, BTN_FS, DARKGRAY);
+    DrawText("Play Again", play_again_btn_txt.x, play_again_btn_txt.y, FS_BTN, DARKGRAY);
 
     // go to menù
     DrawRectangleRec(menu_btn_bounds, menu_btn_hover_clr ? WHITE : LIGHTGRAY);
-    DrawText("Menù", menu_btn_txt.x, menu_btn_txt.y, BTN_FS, DARKGRAY);
+    DrawText("Menù", menu_btn_txt.x, menu_btn_txt.y, FS_BTN, DARKGRAY);
 }
 
 void update_gameover_frame(void) {
@@ -220,10 +222,10 @@ void draw_menu_frame(void) {
 
     DrawRectangle(play_btn_bounds.x + play_btn_press, play_btn_bounds.y + play_btn_press, play_btn_bounds.width, play_btn_bounds.height, DARKGRAY); // button shadow
     DrawRectangleRec(play_btn_bounds, play_btn_color);
-    DrawText("Play", play_btn_txt.x, play_btn_txt.y, BTN_FS, play_btn_text_color);
+    DrawText("Play", play_btn_txt.x, play_btn_txt.y, FS_BTN, play_btn_text_color);
 
     DrawText("Preferences", preferences_title_pos.x, preferences_title_pos.y, preferences_title_fs, WHITE);
-    DrawText("Background Music", bkg_sound_setting.x, bkg_sound_setting.y, P_FS, WHITE);
+    DrawText("Background Music", bkg_sound_setting.x, bkg_sound_setting.y, FS_P, WHITE);
 
     DrawRectangleRec(bkg_sound_btn_bounds, DARKGRAY);
     DrawRectangle(bkg_sound_btn_bounds.x + bkg_sound_btn_border, bkg_sound_btn_bounds.y + bkg_sound_btn_border, on_off_box_size, 
@@ -238,7 +240,7 @@ void draw_play_frame(void) {
     DrawTexture(background, 0, bkg_scroll, WHITE);
     DrawTexture(background, 0, -(background.height - bkg_scroll), WHITE);
 
-    for (int i = 0; i < num_bullets; i++) DrawTextureEx(bullet, bullets[i], 0.0f, BULLET_SCALE, WHITE);
+    for (int i = 0; i < num_bullets; i++) DrawTextureEx(bullet, bullets[i], 0.0f, SCALE_BULLET, WHITE);
 
     if (is_spaceship_exploded) {
         // Draw spaceship explosion
@@ -247,16 +249,16 @@ void draw_play_frame(void) {
             spaceship_bounds.y + spaceship_bounds.height / 2 - spaceship_explosion.height / 2
         }, 0.0f, 1.0f, WHITE);
     } else {
-        DrawTextureEx(spaceship, (Vector2){spaceship_bounds.x, spaceship_bounds.y}, 0.0f, SPACESHIP_SCALE, WHITE);
+        DrawTextureEx(spaceship, (Vector2){spaceship_bounds.x, spaceship_bounds.y}, 0.0f, SCALE_SPACESHIP, WHITE);
         if (show_spaceship_flames) {
             DrawTextureEx(flame, (Vector2){ 
-                .x = spaceship_bounds.x + spaceship_bounds.width / 2  - flame.width * FLAME_SCALE - 12, 
+                .x = spaceship_bounds.x + spaceship_bounds.width / 2  - flame.width * SCALE_FLAME - 12, 
                 .y = spaceship_bounds.y + spaceship_bounds.height },
-                0.0f, FLAME_SCALE, WHITE);
+                0.0f, SCALE_FLAME, WHITE);
             DrawTextureEx(flame, (Vector2){ 
                 .x = spaceship_bounds.x + spaceship_bounds.width / 2 + 12, 
                 .y = spaceship_bounds.y + spaceship_bounds.height },
-                0.0f, FLAME_SCALE, WHITE);
+                0.0f, SCALE_FLAME, WHITE);
         }
     }
     
@@ -274,7 +276,7 @@ void draw_play_frame(void) {
     /* The info bar is drawn last to avoid being covered by other objects,
     like an asteroid crossing the screen */
     DrawText(TextFormat("\tAsteroids Destroyed: %d, Asteroid Speed: %.2f px/sec, Time Elapsed: %.2f", 
-        asteroids_destroyed, asteroid_speed * FPS, game_duration), infobar_pos.x, infobar_pos.y, P_FS, RAYWHITE);
+        asteroids_destroyed, asteroid_speed * FPS, game_duration), infobar_pos.x, infobar_pos.y, FS_P, RAYWHITE);
 }
 
 void update_menu_frame(void) {
@@ -326,7 +328,7 @@ void update_play_frame(void) {
     if (bkg_music_on) UpdateMusicStream(bkg_music);
 
     // Increase asteroid speed every 1 seconds
-    if (GetTime() - last_ASI_time >= 1.0 && asteroid_speed + ASI <= MAX_ASTEROID_SPEED) {
+    if (GetTime() - last_ASI_time >= 1.0 && asteroid_speed + ASI <= SPEED_MAX_ASTEROID) {
         asteroid_speed += ASI;
         last_ASI_time = GetTime();
     }
@@ -402,21 +404,21 @@ void update_play_frame(void) {
         }
     }
     // update the position of all the other shoots        
-    for (int i = 0; i < num_bullets; i++) bullets[i].y -= BULLET_SPEED;
+    for (int i = 0; i < num_bullets; i++) bullets[i].y -= SPEED_BULLET;
 
     /*
     *   
     *   Spaceship movements
     */
     if (!is_spaceship_exploded && IsKeyDown(KEY_W)) {
-        if (spaceship_bounds.y >= SPACESHIP_SPEED) {
-            spaceship_bounds.y -= SPACESHIP_SPEED;
+        if (spaceship_bounds.y >= SPEED_SPACESHIP) {
+            spaceship_bounds.y -= SPEED_SPACESHIP;
         }
     }
 
     if (!is_spaceship_exploded && IsKeyDown(KEY_S)) {
-        if (spaceship_bounds.y + spaceship_bounds.height + SPACESHIP_SPEED <= infobar_pos.y) {
-            spaceship_bounds.y += SPACESHIP_SPEED;
+        if (spaceship_bounds.y + spaceship_bounds.height + SPEED_SPACESHIP <= infobar_pos.y) {
+            spaceship_bounds.y += SPEED_SPACESHIP;
         }
     }
 
@@ -424,14 +426,14 @@ void update_play_frame(void) {
         /* Half of the spaceship can exceed the border of the window to allow shooting
         to an asteroid that is passing near the edge of the screen.
         The same is true for the right-side of the screen */
-        if (spaceship_bounds.x >= -spaceship_bounds.width / 2 + SPACESHIP_SPEED) {
-            spaceship_bounds.x -= SPACESHIP_SPEED;
+        if (spaceship_bounds.x >= -spaceship_bounds.width / 2 + SPEED_SPACESHIP) {
+            spaceship_bounds.x -= SPEED_SPACESHIP;
         }
     }
 
     if (!is_spaceship_exploded && IsKeyDown(KEY_D)) {
-        if (spaceship_bounds.x + spaceship_bounds.width / 2 + SPACESHIP_SPEED <= screen_width) {
-            spaceship_bounds.x += SPACESHIP_SPEED;
+        if (spaceship_bounds.x + spaceship_bounds.width / 2 + SPEED_SPACESHIP <= screen_width) {
+            spaceship_bounds.x += SPEED_SPACESHIP;
         }
     }
 
@@ -463,7 +465,8 @@ void update_play_frame(void) {
     }
 }
 
-void init_variables(void) {
+void init_variables(void) 
+{
     bkg_music = LoadMusicStream("resources/dead-space-music.mp3");
     bkg_music.looping = true;
 
@@ -483,8 +486,8 @@ void init_variables(void) {
     asteroid_explosion = LoadTexture("resources/explosion.png");
 
     /* components bounds/position */
-    spaceship_bounds.width = spaceship.width * SPACESHIP_SCALE,
-    spaceship_bounds.height = spaceship.height * SPACESHIP_SCALE,
+    spaceship_bounds.width = spaceship.width * SCALE_SPACESHIP,
+    spaceship_bounds.height = spaceship.height * SCALE_SPACESHIP,
     spaceship_bounds.x = (screen_width - spaceship_bounds.width) / 2;
     spaceship_bounds.y = (screen_height - spaceship_bounds.height) / 3 * 2;
 
@@ -494,7 +497,7 @@ void init_variables(void) {
 
     /* infobar */
     infobar_pos.x = 0;
-    infobar_pos.y = screen_height - (P_FS + 8); // 8px of bottom-padding
+    infobar_pos.y = screen_height - (FS_P + 8); // 8px of bottom-padding
     asteroid_speed = 1.0f;
     asteroids_destroyed = 0;
     last_ASI_time = 0.0;
@@ -502,8 +505,8 @@ void init_variables(void) {
     game_duration = 0.0;
 
     /* other variables */
-    bullet_width = bullet.width * BULLET_SCALE;
-    bullet_height = bullet.height * BULLET_SCALE;
+    bullet_width = bullet.width * SCALE_BULLET;
+    bullet_height = bullet.height * SCALE_BULLET;
     num_bullets = 0;
 
     bkg_music_on = true;
@@ -522,17 +525,17 @@ void init_variables(void) {
     *
     *   Menù setup
     */
-    title_fs = H1_FS;
+    title_fs = FS_H1;
     title_pos.x = screen_width / 2 - MeasureText("Spaceshp Survival", title_fs) / 2;
     title_pos.y = 50; // random margin from the top
 
-    play_btn_txt.x = screen_width / 2 - MeasureText("Play", BTN_FS) / 2;
-    play_btn_txt.y = title_pos.y + H1_FS + PLAY_BTN_BLOCK_PADDING + 50; // 50px is margin from the above object
+    play_btn_txt.x = screen_width / 2 - MeasureText("Play", FS_BTN) / 2;
+    play_btn_txt.y = title_pos.y + FS_H1 + PADDING_PLAY_BTN_BLOCK + 50; // 50px is margin from the above object
 
-    play_btn_bounds.width = MeasureText("Play", BTN_FS) + PLAY_BTN_INLINE_PADDING * 2;
-    play_btn_bounds.height = BTN_FS + 2 * PLAY_BTN_BLOCK_PADDING;
+    play_btn_bounds.width = MeasureText("Play", FS_BTN) + PADDING_PLAY_BTN_INLINE * 2;
+    play_btn_bounds.height = FS_BTN + 2 * PADDING_PLAY_BTN_BLOCK;
     play_btn_bounds.x = screen_width / 2 - play_btn_bounds.width / 2;
-    play_btn_bounds.y = play_btn_txt.y - PLAY_BTN_BLOCK_PADDING;
+    play_btn_bounds.y = play_btn_txt.y - PADDING_PLAY_BTN_BLOCK;
 
     play_btn_color = LIGHTGRAY;
     play_btn_text_color = DARKGRAY;
@@ -540,12 +543,12 @@ void init_variables(void) {
     play_btn_pressed = false;
     play_btn_press = 5.0f;
 
-    preferences_title_fs = H2_FS;
+    preferences_title_fs = FS_H2;
     preferences_title_pos.x = title_pos.x;
     preferences_title_pos.y = play_btn_bounds.y + 3 * play_btn_bounds.height;
 
     bkg_sound_setting.x = preferences_title_pos.x;
-    bkg_sound_setting.y = preferences_title_pos.y + 2 * H2_FS;
+    bkg_sound_setting.y = preferences_title_pos.y + 2 * FS_H2;
 
     bkg_sound_btn_left_margin = 20.0f;
     bkg_sound_btn_border = 3.0f;
@@ -553,41 +556,41 @@ void init_variables(void) {
 
     bkg_sound_btn_bounds.width = on_off_box_size * 2 + bkg_sound_btn_border * 2;
     bkg_sound_btn_bounds.height = (on_off_box_size + bkg_sound_btn_border * 2);
-    bkg_sound_btn_bounds.x = bkg_sound_setting.x + MeasureText("Background Music", P_FS) + bkg_sound_btn_left_margin;
-    bkg_sound_btn_bounds.y = bkg_sound_setting.y - (bkg_sound_btn_bounds.height - P_FS) / 2;
+    bkg_sound_btn_bounds.x = bkg_sound_setting.x + MeasureText("Background Music", FS_P) + bkg_sound_btn_left_margin;
+    bkg_sound_btn_bounds.y = bkg_sound_setting.y - (bkg_sound_btn_bounds.height - FS_P) / 2;
 
     /*
     *
     *   Gameover Setup
     */
-    gameover_title_fs = H1_FS;
+    gameover_title_fs = FS_H1;
     gameover_title_pos.x = screen_width / 2 - MeasureText("Game Over", gameover_title_fs) / 2;
     gameover_title_pos.y = title_pos.y;
 
-    stats_fs = H2_FS;
+    stats_fs = FS_H2;
     asteroids_destroyed_txt.x = screen_width / 2 - MeasureText("Asteroids Destroyed: ", stats_fs) / 2;
-    asteroids_destroyed_txt.y = gameover_title_pos.y + H1_FS + 30;
+    asteroids_destroyed_txt.y = gameover_title_pos.y + FS_H1 + 30;
     
     game_duration_txt.x = screen_width / 2 - MeasureText("Asteroids Destroyed: ", stats_fs) / 2;
-    game_duration_txt.y = asteroids_destroyed_txt.y + H2_FS + 20;
+    game_duration_txt.y = asteroids_destroyed_txt.y + FS_H2 + 20;
 
-    play_again_btn_txt.x = screen_width / 2 - MeasureText("Play Again", BTN_FS) / 2;
-    play_again_btn_txt.y = game_duration_txt.y + H2_FS + PLAY_BTN_BLOCK_PADDING + 50; // 50px is margin from the above object
+    play_again_btn_txt.x = screen_width / 2 - MeasureText("Play Again", FS_BTN) / 2;
+    play_again_btn_txt.y = game_duration_txt.y + FS_H2 + PADDING_PLAY_BTN_BLOCK + 50; // 50px is margin from the above object
 
-    play_again_btn_bounds.width = MeasureText("Play Again", BTN_FS) + PLAY_BTN_INLINE_PADDING * 2;
-    play_again_btn_bounds.height = BTN_FS + PLAY_BTN_BLOCK_PADDING * 2;
+    play_again_btn_bounds.width = MeasureText("Play Again", FS_BTN) + PADDING_PLAY_BTN_INLINE * 2;
+    play_again_btn_bounds.height = FS_BTN + PADDING_PLAY_BTN_BLOCK * 2;
     play_again_btn_bounds.x = screen_width / 2 - play_again_btn_bounds.width / 2;
-    play_again_btn_bounds.y = play_again_btn_txt.y - PLAY_BTN_BLOCK_PADDING;
+    play_again_btn_bounds.y = play_again_btn_txt.y - PADDING_PLAY_BTN_BLOCK;
 
     play_again_btn_hover_clr = false;
 
-    menu_btn_txt.x = screen_width / 2 - MeasureText("Menù", BTN_FS) / 2;
-    menu_btn_txt.y = play_again_btn_txt.y + H1_FS + PLAY_BTN_BLOCK_PADDING + 50; // 50px is margin from the above object
+    menu_btn_txt.x = screen_width / 2 - MeasureText("Menù", FS_BTN) / 2;
+    menu_btn_txt.y = play_again_btn_txt.y + FS_H1 + PADDING_PLAY_BTN_BLOCK + 50; // 50px is margin from the above object
     
-    menu_btn_bounds.width = MeasureText("Menù", BTN_FS) + PLAY_BTN_INLINE_PADDING * 2;
-    menu_btn_bounds.height = BTN_FS + PLAY_BTN_BLOCK_PADDING * 2;
+    menu_btn_bounds.width = MeasureText("Menù", FS_BTN) + PADDING_PLAY_BTN_INLINE * 2;
+    menu_btn_bounds.height = FS_BTN + PADDING_PLAY_BTN_BLOCK * 2;
     menu_btn_bounds.x = screen_width / 2 - menu_btn_bounds.width / 2;
-    menu_btn_bounds.y = menu_btn_txt.y - PLAY_BTN_BLOCK_PADDING;
+    menu_btn_bounds.y = menu_btn_txt.y - PADDING_PLAY_BTN_BLOCK;
 
     menu_btn_hover_clr = false;
 }
