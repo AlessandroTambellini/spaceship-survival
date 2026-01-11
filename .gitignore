@@ -3,11 +3,4 @@ archive
 notes.txt
 notes.md
 .vscode
-game
-game.out
-game.data
-game.html
-game.js
-game.wasm
-minshell.html
-shell.html
+output

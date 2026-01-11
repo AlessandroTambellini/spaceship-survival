@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Spaceship Survival</title>
+
+    <!-- <link rel="icon" type="image/webp" href="_assets/spaceship.webp"> -->
+
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            background-color: rgb(26, 28, 32);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="spaceship-survival-playground" class="emscripten"></canvas>
+    <script>
+        var Module = {
+            print: log => {
+                if (!log.includes('INFO:')) console.log(log)
+            },
+            canvas: (()  => document.querySelector('#spaceship-survival-playground'))()
+        };
+    </script>
+    {{{ SCRIPT }}}
+</body>
+</html>

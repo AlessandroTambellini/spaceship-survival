@@ -1,14 +1,6 @@
 # Spaceship Survival
-Spaceship Survival, 2D arcade game.
 
-## Compilation
-### GNU Linux
-`cc -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 game.c -o game`
-### Web (HTML5)
-```sh
-emcc -Wall ~/raylib/src/libraylib.a -I. -I/usr/include -L. -L~/raylib/src/libraylib.a -s USE_GLFW=3 --shell-file shell.html -DPLATFORM_WEB --preload-file resources -sASSERTIONS -sINITIAL_MEMORY=25MB -sSTACK_SIZE=5MB -o game.html game.c
-```
-This is my specific compilation process. Read the Web wiki for more info: https://github.com/raysan5/raylib/wiki/Working-for-Web-(HTML5)
+![snapshot.png](snapshot.png)
 
 ## Notes
 ### Collision
@@ -20,5 +12,5 @@ the latter was going to restart and loop. But, the restart of the sound was clea
 I decided not to loop the sound once it finishes.  
 P.S. I know in space there is no sound. Still, I wanted a propulsion sound :) 
 
-### Attributes
-* [Sound Effect from Pixabay]("https://pixabay.com/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=47562")
+### Attribution
+[Sound Effect from Pixabay]("https://pixabay.com/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=47562")
