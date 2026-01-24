@@ -7,8 +7,9 @@ set -xe
 mkdir -p output
 
 if [ "$1" = "web" ]; then
-    # -O2
-    # -sASSERTIONS
+    # Note: I don't use optimization flags because I want the generated html and js code to be hackable (also from my website!). 
+    # Therefore I don't want the .html and .js files to be minified.
+    # Once the files are generated, I move them to my website.
     emcc \
         -Wall \
         -I/usr/include \
@@ -21,7 +22,7 @@ if [ "$1" = "web" ]; then
         -o output/spaceship-survival.html \
         ~/raylib/src/libraylib.a spaceship-survival.c
 
-    # Option: preloading of the resources
+    # Other Option: preloading of the resources
     # emcc \
     #     -Wall \
     #     -I/usr/include \
